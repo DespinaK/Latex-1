@@ -22,11 +22,17 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
+import javax.swing.JTextField;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 public class LatexEditorView {
 
 	private JFrame frame;
-	private JEditorPane textField = new JEditorPane();;
+	private JEditorPane textField = new JEditorPane();
+	
 	/**
 	 * Launch the application.
 	 * @wbp.parser.entryPoint
@@ -34,53 +40,60 @@ public class LatexEditorView {
 	static LatexEditorView window = new LatexEditorView();	
 	LatexEditorController myController = new LatexEditorController(window);
 	private JButton apply;
+	private JTextField textField_1;
+	
+	
 
 	public static void main(String[] args) {
 		
-		EventQueue.invokeLater(new Runnable() {
+		EventQueue.invokeLater(new Runnable() { 
 			public void run() {
 				try {
 					window.frame.setVisible(true);
 				} catch (Exception e) {
-					e.printStackTrace();
+					e.printStackTrace(); 
 				}
 			}
 		});
 	}
+
+	
 
 	/**
 	 * @wbp.parser.entryPoint
 	 */
 	public LatexEditorView() {
 		initialize();
+		
 	}
 	/**
 	 * @wbp.parser.entryPoint
 	 */
+	
 
 	private void initialize() {
 		frame = new JFrame("Latex Editor");
-		frame.setBounds(0, 0, 629, 680);
+		frame.setBounds(100, 100, 629, 664);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		
-		textField.setBounds(134, 21, 469, 609);
+		textField.setBounds(134, 21, 469, 593);
 		textField.setEnabled(false);
 		frame.getContentPane().add(textField);
 
 		
 		
-		JButton chapter = new JButton("chapter");
+		JButton chapter = new JButton("chapter"); 
 		chapter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
 				myController.setAddLine(getRow(textField));
 				myController.enact("chapter");
-				textField.setText(myController.getTextField());
+				textField.setText(myController.getTextField()); 
 			}
 		});
-		chapter.setBounds(0, 116, 124, 23);
+		chapter.setBounds(0, 125, 124, 23); 
 		chapter.setEnabled(false);
 		frame.getContentPane().add(chapter);
 		
@@ -92,7 +105,7 @@ public class LatexEditorView {
 				textField.setText(myController.getTextField());
 			}
 		});
-		section.setBounds(0, 150, 124, 23);
+		section.setBounds(0, 159, 124, 23);
 		section.setEnabled(false);
 		frame.getContentPane().add(section);
 		
@@ -104,7 +117,7 @@ public class LatexEditorView {
 				textField.setText(myController.getTextField());
 			}
 		});
-		subsection.setBounds(0, 184, 124, 23);
+		subsection.setBounds(0, 193, 124, 23);
 		subsection.setEnabled(false);
 		frame.getContentPane().add(subsection);
 		
@@ -166,7 +179,7 @@ public class LatexEditorView {
 		
 		JLabel lblAdd = new JLabel("add:");
 		lblAdd.setHorizontalAlignment(SwingConstants.CENTER);
-		lblAdd.setBounds(23, 91, 87, 14);
+		lblAdd.setBounds(10, 100, 87, 14);
 		frame.getContentPane().add(lblAdd);
 		
 		apply = new JButton("apply");
@@ -184,11 +197,11 @@ public class LatexEditorView {
 		menuBar.setBounds(0, 0, 446, 21);
 		frame.getContentPane().add(menuBar);
 		
-		JMenu fileVar = new JMenu("File");
-		menuBar.add(fileVar);
+		JMenu mnNewMenu = new JMenu("File");
+		menuBar.add(mnNewMenu);
 		
 		JMenu mnNewTemplate = new JMenu("New");
-		fileVar.add(mnNewTemplate);
+		mnNewMenu.add(mnNewTemplate);
 		
 		JMenuItem mntmEmptyTemplate = new JMenuItem("Empty Template");
 		mntmEmptyTemplate.addActionListener(new ActionListener() {
@@ -217,7 +230,6 @@ public class LatexEditorView {
 			
 				myController.enact("report");
 				textField.setEnabled(true);
-				System.out.println(myController.getDocument().getContents());
 				textField.setText(myController.getDocument().getContents());
 			}
 		});
@@ -238,7 +250,7 @@ public class LatexEditorView {
 				textField.setText(myController.getDocument().getContents());
 			}
 		});
-		mnNewTemplate.add(mntmBookTemplate);
+		mnNewTemplate.add(mntmBookTemplate); 
 		
 		JMenuItem mntmArticleTemplate = new JMenuItem("Article Template");
 		mntmArticleTemplate.addActionListener(new ActionListener() {
@@ -285,19 +297,24 @@ public class LatexEditorView {
 				int retVal = fileChooser.showOpenDialog((Component)e.getSource());
 				if (retVal == JFileChooser.APPROVE_OPTION) {
 			        File file = fileChooser.getSelectedFile();
-			        fileName = file.toString();
-			        myController.setLoadDocument(fileName);
-			        myController.enact("load");	
-			   		textField.setText(myController.getDocument().getContents());
-			   		textField.setEnabled(true);
-			       
+			        try {
+			        	fileName = file.toString();
+			           	//myController.setLoadDocument(fileName);
+			        	myController.getDocument().setFileName(fileName);
+			   			myController.enact("load");	
+			   			textField.setText(myController.getDocument().getContents());
+			   			textField.setEnabled(true);
+			        } catch (Exception ex) {
+			          System.out.println("problem accessing file"+file.getAbsolutePath());
+			        }
 			    } 
 			    else {
 			        System.out.println("File access cancelled by user.");
 			    }    
 			}
 		});
-		fileVar.add(load);
+		mnNewMenu.add(load);
+		
 		
 		JMenuItem save = new JMenuItem("Save File");
 		save.addActionListener(new ActionListener() {
@@ -311,79 +328,116 @@ public class LatexEditorView {
 				int retVal = fileChooser.showSaveDialog((Component)e.getSource());
 				if (retVal == JFileChooser.APPROVE_OPTION) {
 			        File file = fileChooser.getSelectedFile();
-			        fileName = file.toString();
-			        myController.getDocument().setFileName(fileName);
-			   		myController.enact("save");	
+			        try {
+			        	fileName = file.toString();
+			           	//myController.setSaveDocument(fileName);
+			        	myController.getDocument().setFileName(fileName);
+			   			myController.enact("save");	
+			        } catch (Exception ex) {
+			          System.out.println("problem accessing file"+file.getAbsolutePath());
+			        }
 			    } 
 			    else {
 			        System.out.println("File access cancelled by user.");
 			    }       
 			}
 		});
-		fileVar.add(save);
+		mnNewMenu.add(save);
 		
-		JMenu trackingVar = new JMenu("Version Tracking");
-		menuBar.add(trackingVar);
-		JCheckBoxMenuItem enableVersion = new JCheckBoxMenuItem("enable");
-		JCheckBoxMenuItem stableVersion = new JCheckBoxMenuItem("Stable");
+		JMenuItem mntmRollBack = new JMenuItem("Roll Back");
+		mntmRollBack.setEnabled(false);
+		
+		JMenu mnNewMenu_1 = new JMenu("Version Tracking"); 
+		menuBar.add(mnNewMenu_1);
 		JCheckBoxMenuItem volatileVersion = new JCheckBoxMenuItem("Volatile");
 		
-		trackingVar.add(enableVersion);
-		JMenu strategyVar = new JMenu("Strategy");
-		trackingVar.add(strategyVar);
-		strategyVar.setEnabled(false);
-		
-/***********************************    TRACKING ENABLE    ******************************/
+		JCheckBoxMenuItem enableVersion = new JCheckBoxMenuItem("enable");
 		enableVersion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				volatileVersion.setState(true);
 				if (enableVersion.getState()){
-					strategyVar.setEnabled(true);
-					myController.enact("enableVersionsManagement");
-					volatileVersion.setState(true);
+					mntmRollBack.setEnabled(true); 
+					myController.enact("enableVersionsManagement"); 
 				}else {
-					strategyVar.setEnabled(false);
-					myController.enact("disableVersionsManagement");
-				}
+					myController.enact("disableVersionsManagement"); 
+				} 
 			}
 		});
+		mnNewMenu_1.add(enableVersion);
 		
-/************************************    STABLE    *************************************************/
-		stableVersion.addActionListener(new ActionListener() { 
+		
+		JMenu mnNewMenu_2 = new JMenu("Strategy");
+		mnNewMenu_1.add(mnNewMenu_2);
+		JCheckBoxMenuItem stableVersion = new JCheckBoxMenuItem("Stable");
+		stableVersion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (stableVersion.getState()) {
 					volatileVersion.setState(false);
+					System.out.println("STABLE TRUE");
 					JFileChooser fileChooser = new JFileChooser();
 					FileNameExtensionFilter filter = new FileNameExtensionFilter("TEX", "tex", "tex");
 					fileChooser.setFileFilter(filter);
 					fileChooser.setBounds(-18, -5, 582, 397);
-					frame.getContentPane().add(fileChooser);
+					frame.getContentPane().add(fileChooser); 
 					String fileName;
 					int retVal = fileChooser.showSaveDialog((Component)e.getSource());
 					if (retVal == JFileChooser.APPROVE_OPTION) {
 				        File file = fileChooser.getSelectedFile();
-				        fileName = file.toString();
-				        myController.getDocument().setFileName(fileName);
-				        myController.getVersionsManager().getStrategy().getVersion().setFileName(fileName);
-				   		//myController.enact("save");	
-				   		myController.enact("changeToStable");				    
-				    } 
+				        //try {
+				        	fileName = file.toString();
+				           	myController.getDocument().setFileName(fileName);  
+				           	 
+				           	myController.enact("changeToStable");
+				   			myController.enact("save");	 
+				   			
+				        //} catch (Exception ex) {
+				          System.out.println("problem accessing file"+file.getAbsolutePath());
+				        //}
+				    }   
 				    else {
-				        System.out.println("File access cancelled by user.");
+				        System.out.println("File access cancelled by user."); 
 				    }
 				}
+				
 			}
 		});
-		strategyVar.add(stableVersion);
+		mnNewMenu_2.add(stableVersion); 
 		
-/**********************************    VOLATILE    **************************************/
+		
 		volatileVersion.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				stableVersion.setState(false);
-				myController.enact("changeToVolatile");
+				volatileVersion.setState(true);
+				myController.enact("changeToVolatile");   
+				
 			}
 		});
-		strategyVar.add(volatileVersion);
+		mnNewMenu_2.add(volatileVersion);
+		
+		
+		
+		mntmRollBack.addActionListener(new ActionListener() {  
+			public void actionPerformed(ActionEvent e) {
+					
+					int size = myController.getVersionsManager().getStrategy().getEntireHistory().size(); 
+					String num = JOptionPane.showInputDialog(null, "There are "+String.valueOf(size)+" Versions in History.\nChoose a version by number."); 
+					if (Integer.parseInt(num)==0 || Integer.parseInt(num)>size) {
+						JOptionPane.showMessageDialog(null, "Please try again.", "Invalid Input!", JOptionPane.WARNING_MESSAGE);
+					}
+					 
+					myController.getVersionsManager().setNumToRoll(Integer.parseInt(num)-1);
+					
+					myController.enact("rollback");  
+					
+					textField.setText(myController.getDocument().getContents());  
+			}
+		});
+		mnNewMenu_1.add(mntmRollBack);
+		
+	
+		
 	}
+	
 	
 	public Integer getRow(JEditorPane text) {
 		Integer rowNum = 0;
@@ -397,6 +451,8 @@ public class LatexEditorView {
 			}catch (BadLocationException r) {
 				 r.printStackTrace();
 			}
-		return rowNum;
+		return rowNum; 
 	}
+
+
 }
